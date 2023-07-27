@@ -97,13 +97,6 @@ class BSet(Set[int]):
     def __or__(self, other: BSet):
         return self.union(other)
 
-    def __len__(self) -> int:
-        """
-        Size computation. The most expensive operation.
-        Use int.bit_length(your_integer) to calculate the bit length.
-        """
-        return bin(self.elems).count('1')
-
     def __str__(self):
         """ Construct a nice string representation. """
         bit_elems = self.elems

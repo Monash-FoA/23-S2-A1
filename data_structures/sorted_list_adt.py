@@ -63,7 +63,7 @@ class SortedList(ABC, Generic[T]):
         """ Find the position of a given item in the list. """
         pass
 
-    def remove(self, item: T) -> None:
+    def remove(self, item: ListItem) -> None:
         """ Remove an item from the list. """
         index = self.index(item)
         self.delete_at_index(index)
