@@ -14,6 +14,7 @@ class MonsterBase(abc.ABC):
         """
         self.simple_mode = simple_mode
         self.level = level
+        self.default_level = level
         self.hp = Stats.get_max_hp
 
     def get_level(self):
@@ -72,12 +73,13 @@ class MonsterBase(abc.ABC):
 
     def ready_to_evolve(self) -> bool:
         """Whether this monster is ready to evolve. See assignment spec for specific logic."""
-        temp = self.get_simple_stats(self)
         if self.get_evolution == None:
             return False
-        elif self.get_level == 1: #??????????
-            print("not done")
-
+        elif self.get_level < self.default_level:
+            return False
+        else:
+            return True
+        
     def evolve(self) -> MonsterBase:
         """Evolve this monster instance by returning a new instance of a monster class."""
         temp = self.get_evolution(self)
@@ -88,7 +90,7 @@ class MonsterBase(abc.ABC):
 
         temp.set_hp(temp_health) #Setting the new hp
 
-        return temp 
+        return temp
 
     ### NOTE
     # Below is provided by the factory - classmethods
