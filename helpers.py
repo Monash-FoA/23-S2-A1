@@ -66,3 +66,49 @@ def _make_all_monster_classes():
         globals()[monster["name"]].get_evolution = classmethod(lambda s: s.evolution_class)
 
 get_all_monsters()
+
+if TYPE_CHECKING:
+    # Makes no sense but fixes the red squigglies
+    Aquanake = MonsterBase
+    Aquariuma = MonsterBase
+    ArrayR = MonsterBase
+    Blizzarus = MonsterBase
+    Bugrattler = MonsterBase
+    Constriclaw = MonsterBase
+    Darkadder = MonsterBase
+    Driftsnake = MonsterBase
+    Faeboa = MonsterBase
+    Flameserpent = MonsterBase
+    Flamikin = MonsterBase
+    Frostbite = MonsterBase
+    Groundviper = MonsterBase
+    Gustwing = MonsterBase
+    Iceviper = MonsterBase
+    Infernoth = MonsterBase
+    Infernox = MonsterBase
+    Ironclad = MonsterBase
+    Leafadder = MonsterBase
+    Leviatitan = MonsterBase
+    Marititan = MonsterBase
+    Metalhorn = MonsterBase
+    MonsterBaseFactory = MonsterBase
+    Mystifly = MonsterBase
+    Nightpanther = MonsterBase
+    Normake = MonsterBase
+    Psychosnake = MonsterBase
+    Pythondra = MonsterBase
+    Rockodile = MonsterBase
+    Rockpython = MonsterBase
+    Shadowcat = MonsterBase
+    Shockserpent = MonsterBase
+    Soundcobra = MonsterBase
+    Stonemountain = MonsterBase
+    Stormeagle = MonsterBase
+    Strikeon = MonsterBase
+    Telekite = MonsterBase
+    Thunderdrake = MonsterBase
+    Thundrake = MonsterBase
+    Treemendous = MonsterBase
+    Treetower = MonsterBase
+    Venomcoil = MonsterBase
+    Vineon = MonsterBase

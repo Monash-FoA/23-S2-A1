@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from enum import auto
+from typing import Optional
 
 from base_enum import BaseEnum
 
@@ -55,7 +56,7 @@ class EffectivenessCalculator:
         EffectivenessCalculator.get_effectiveness(elem1, elem2)
     """
 
-    instance: EffectivenessCalculator = None
+    instance: Optional[EffectivenessCalculator] = None
 
     def __init__(self, element_names: ArrayR[str], effectiveness_values: ArrayR[float]) -> None:
         """
