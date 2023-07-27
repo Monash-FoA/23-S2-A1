@@ -1,5 +1,6 @@
 from __future__ import annotations
 from enum import auto
+from typing import Optional
 
 from base_enum import BaseEnum
 from team import MonsterTeam
@@ -20,7 +21,14 @@ class Battle:
     def __init__(self, verbosity=0) -> None:
         self.verbosity = verbosity
 
-    def process_turn(self):
+    def process_turn(self) -> Optional[Battle.Result]:
+        """
+        Process a single turn of the battle. Should:
+        * process actions chosen by each team
+        * level and evolve monsters
+        * remove fainted monsters and retrieve new ones.
+        * return the battle result if completed.
+        """
         raise NotImplementedError
 
     def battle(self, team1: MonsterTeam, team2: MonsterTeam) -> Battle.Result:

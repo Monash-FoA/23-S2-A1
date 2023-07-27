@@ -46,14 +46,43 @@ class Element(BaseEnum):
         raise ValueError(f"Unexpected string {string}")
 
 class EffectivenessCalculator:
+    """
+    Helper class for calculating the element effectiveness for two elements.
+
+    This class follows the singleton pattern.
+
+    Usage:
+        EffectivenessCalculator.get_effectiveness(elem1, elem2)
+    """
 
     instance: EffectivenessCalculator = None
 
     def __init__(self, element_names: ArrayR[str], effectiveness_values: ArrayR[float]) -> None:
+        """
+        Initialise the Effectiveness Calculator.
+
+        The first parameter is an ArrayR of size n containing all element_names.
+        The second parameter is an ArrayR of size n*n, containing all effectiveness values.
+            The first n values in the array is the effectiveness of the first element
+            against all other elements, in the same order as element_names.
+            The next n values is the same, but the effectiveness of the second element, and so on.
+
+        Example:
+        element_names: ['Fire', 'Water', 'Grass']
+        effectivness_values: [0.5, 0.5, 2, 2, 0.5, 0.5, 0.5, 2, 0.5]
+        Fire is half effective to Fire and Water, and double effective to Grass [0.5, 0.5, 2]
+        Water is double effective to Fire, and half effective to Water and Grass [2, 0.5, 0.5]
+        Grass is half effective to Fire and Grass, and double effective to Water [0.5, 2, 0.5]
+        """
         raise NotImplementedError
 
     @classmethod
     def get_effectiveness(cls, type1: Element, type2: Element) -> float:
+        """
+        Returns the effectivness of elem1 attacking elem2.
+
+        Example: EffectivenessCalculator.get_effectiveness(Element.FIRE, Element.WATER) == 0.5
+        """
         raise NotImplementedError
 
     @classmethod
