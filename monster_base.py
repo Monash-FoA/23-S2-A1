@@ -6,39 +6,52 @@ from stats import Stats
 class MonsterBase(abc.ABC):
 
     def __init__(self, simple_mode=True, level:int=1) -> None:
+        """
+        Initialise an instance of a monster.
+
+        :simple_mode: Whether to use the simple or complex stats of this monster
+        :level: The starting level of this monster. Defaults to 1.
+        """
         raise NotImplementedError
 
     def get_level(self):
+        """The current level of this monster instance"""
         raise NotImplementedError
 
     def level_up(self):
+        """Increase the level of this monster instance by 1"""
         raise NotImplementedError
 
     def get_hp(self):
+        """Get the current HP of this monster instance"""
         raise NotImplementedError
 
     def set_hp(self, val):
-        raise NotImplementedError
-
-    def get_stat_args(self):
+        """Set the current HP of this monster instance"""
         raise NotImplementedError
 
     def get_attack(self):
+        """Get the attack of this monster instance"""
         raise NotImplementedError
 
     def get_defense(self):
+        """Get the defense of this monster instance"""
         raise NotImplementedError
 
     def get_speed(self):
+        """Get the speed of this monster instance"""
         raise NotImplementedError
 
     def get_max_hp(self):
+        """Get the maximum HP of this monster instance"""
         raise NotImplementedError
 
     def alive(self) -> bool:
+        """Whether the current monster instance is alive (HP > 0 )"""
         raise NotImplementedError
 
     def attack(self, other: MonsterBase):
+        """Attack another monster instance"""
         # Step 1: Compute attack stat vs. defense stat
         # Step 2: Apply type effectiveness
         # Step 3: Ceil to int
@@ -46,9 +59,11 @@ class MonsterBase(abc.ABC):
         raise NotImplementedError
 
     def ready_to_evolve(self) -> bool:
+        """Whether this monster is ready to evolve. See assignment spec for specific logic."""
         raise NotImplementedError
 
     def evolve(self) -> MonsterBase:
+        """Evolve this monster instance by returning a new instance of a monster class."""
         raise NotImplementedError
 
     ### NOTE
