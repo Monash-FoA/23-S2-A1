@@ -47,9 +47,31 @@ class MonsterTeam:
             self.select_provided(**kwargs)
         else:
             raise ValueError(f"selection_mode {selection_mode} not supported.")
+        self.team_size = 0
+        self.team = ArrayR(self.TEAM_LIMIT)
+        self.desc = True
+
 
     def add_to_team(self, monster: MonsterBase):
-        raise NotImplementedError
+        self.team = team
+
+        if self.team_mode == self.BACK:
+            team[self.get_size] = monster
+
+        if self.team_mode == self.FRONT:
+            counter = 0
+            for j in range(-1,self.get_size):
+                if team[j+1] == None:
+                    for i in range(counter):
+                        team[counter] = team[counter-1]
+                        team[counter-1] = None
+                        counter -= 1
+                counter += 1
+            team[0] = monster
+        
+        if self.team_mode == self.OPTIMISE:
+            # stat_track = #{Stat to sort by?}
+            team[self.get_size] = monster
 
     def retrieve_from_team(self) -> MonsterBase:
         raise NotImplementedError
