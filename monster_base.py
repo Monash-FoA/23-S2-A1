@@ -23,10 +23,9 @@ class MonsterBase(abc.ABC):
 
     def level_up(self):
         """Increase the level of this monster instance by 1"""
-        return (self.level + 1)
+        self.level += 1
 
     def get_hp(self):
-        """Get the current HP of this monster instance"""
         return self.hp
 
     def set_hp(self, val):
@@ -56,16 +55,15 @@ class MonsterBase(abc.ABC):
             return True
         else:
             return False
-
     def attack(self, other: MonsterBase):
         """Attack another monster instance"""
         # Step 1: Compute attack stat vs. defense stat
-        if other.get_defense < (self.get_attack/2):
-            damage = self.get_attack - other.get_defense
-        elif other.get_defense < self.get_attack:
-            damage = (self.get_attack * (5/8)) - (other.get_defense / 4)
+        if other.get_defense() < (self.get_attack()/2):
+            damage = self.get_attack() - other.get_defense()
+        elif other.get_defense() < self.get_attack():
+            damage = (self.get_attack() * (5/8)) - (other.get_defense() / 4)
         else:
-            damage = self.get_attack/4
+            damage = self.get_attack()/4
         # Step 2: Apply type effectiveness
         # Step 3: Ceil to int
         # Step 4: Lose HP
