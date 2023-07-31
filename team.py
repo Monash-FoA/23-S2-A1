@@ -8,6 +8,8 @@ from random_gen import RandomGen
 from helpers import get_all_monsters
 
 from data_structures.referential_array import ArrayR
+from data_structures.stack_adt import ArrayStack
+from data_structures.queue_adt import CircularQueue
 
 if TYPE_CHECKING:
     from battle import Battle
@@ -47,37 +49,69 @@ class MonsterTeam:
             self.select_provided(**kwargs)
         else:
             raise ValueError(f"selection_mode {selection_mode} not supported.")
-        self.team_size = 0
-        self.team = ArrayR(self.TEAM_LIMIT)
-        self.desc = True
+        
+        if team_mode == self.TeamMode.FRONT:
+            self.team = ArrayStack(self.TEAM_LIMIT)
+
+        elif team_mode == self.TeamMode.BACK:
+            self.team = CircularQueue(self.TEAM_LIMIT)
+
+        # elif team_mode == self.TeamMode.OPTIMISE:
+            #todo
+        # else:
+        #     raise ValueError(f"team mode {team_mode} not supported.")
 
 
     def add_to_team(self, monster: MonsterBase):
-        self.team = team
+        team_mode = self.team_mode
+        team = self.team
 
-        if self.team_mode == self.BACK:
-            team[self.get_size] = monster
 
-        if self.team_mode == self.FRONT:
-            counter = 0
-            for j in range(-1,self.get_size):
-                if team[j+1] == None:
-                    for i in range(counter):
-                        team[counter] = team[counter-1]
-                        team[counter-1] = None
-                        counter -= 1
-                counter += 1
-            team[0] = monster
+        if team_mode == self.TeamMode.FRONT:
+            team.push(monster)
+
+        if team_mode == self.TeamMode.BACK:
+            team.append(monster)
         
-        if self.team_mode == self.OPTIMISE:
+        # if self.team_mode == self.OPTIMISE:
             # stat_track = #{Stat to sort by?}
-            team[self.get_size] = monster
+            # team[self.get_size] = monster
 
     def retrieve_from_team(self) -> MonsterBase:
-        raise NotImplementedError
+        team_mode = self.team_mode
+        team = self.team
+
+
+        if team_mode == self.TeamMode.FRONT:
+           return team.pop()
+
+        if team_mode == self.TeamMode.BACK:
+            return team.serve()
+        
+        # if self.team_mode == self.OPTIMISE:
+            # stat_track = #{Stat to sort by?}
+            # team[self.get_size] = monster
 
     def special(self) -> None:
-        raise NotImplementedError
+        team_mode = self.team_mode
+        team = self.team
+
+
+        if team_mode == self.TeamMode.FRONT:
+            char1 = team.pop()
+            char2 = team.pop()
+            char3 = team.pop()
+            team.push(char1)
+            team.push(char2)
+            team.push(char3)
+
+        # if team_mode == self.TeamMode.BACK:
+
+            
+        
+        # if self.team_mode == self.OPTIMISE:
+            # stat_track = #{Stat to sort by?}
+            # team[self.get_size] = monster
 
     def regenerate_team(self) -> None:
         raise NotImplementedError
@@ -208,7 +242,48 @@ class MonsterTeam:
         This monster cannot be spawned.
         Which monster are you spawning? 1
         """
-        raise NotImplementedError
+        
+        while True:
+            Size = input("How many monsters on the team? (1 to 6 inclusive):" )
+            try:
+                int(Size)
+            except:
+                print("Please enter correct input")
+                continue
+            if Size > 6 or Size < 1:
+                print("Please enter correct input")
+                continue
+            break
+
+
+        for i in range(int(Size)):
+            print("Monsters are:")
+            print(get_all_monsters)
+            while True:
+                index = input("Which monster are you spawning? ")
+                try:
+                    int(index)
+                except:
+                    print("Please enter correct input")
+                    continue
+                if index < 1 or index > 41:
+                    print("Please enter correct input")
+                    continue
+                elif get_all_monsters[index].can_be_spawned:
+                    self.add_to_team(get_all_monsters[int(index)])
+                    break
+                print("This monster cannot be spawned.")
+                continue
+
+
+
+        # First input: Team size. Single integer
+        # For _ in range(team size):
+        #     Next input: Prompt selection of a Monster class.
+        #         * Should take a single input, asking for an integer.
+        #             This integer corresponds to an index (1-indexed) of the helpers method
+        #             get_all_monsters()
+        #         * If invalid of monster is not spawnable, should ask again.
 
     def select_provided(self, provided_monsters:Optional[ArrayR[type[MonsterBase]]]=None):
         """
@@ -223,7 +298,9 @@ class MonsterTeam:
         Example team if in TeamMode.FRONT:
         [Gustwing Instance, Aquariuma Instance, Flamikin Instance]
         """
-        raise NotImplementedError
+
+        for i in range(len(provided_monsters)):
+            self.add_to_team(provided_monsters[i])
 
     def choose_action(self, currently_out: MonsterBase, enemy: MonsterBase) -> Battle.Action:
         # This is just a placeholder function that doesn't matter much for testing.

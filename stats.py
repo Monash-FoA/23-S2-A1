@@ -32,7 +32,6 @@ class SimpleStats(Stats):
     def get_attack(self):
         return self.attack
 
-
     def get_defense(self):
         return self.defense
 
@@ -51,17 +50,16 @@ class ComplexStats(Stats):
         speed_formula: ArrayR[str],
         max_hp_formula: ArrayR[str],
     ) -> None:
-        # TODO: Implement
-        pass
-
-    def get_attack(self, level: int):
         raise NotImplementedError
 
-    def get_defense(self, level: int):
+    def get_attack(self, level):
         raise NotImplementedError
 
-    def get_speed(self, level: int):
+    def get_defense(self, level):
         raise NotImplementedError
 
-    def get_max_hp(self, level: int):
+    def get_speed(self, level):
+        raise NotImplementedError
+
+    def get_max_hp(self, level):
         raise NotImplementedError

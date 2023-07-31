@@ -1,7 +1,2 @@
-from __future__ import annotations
-import abc
-
-from stats import Stats
-
-
-
+from helpers import get_all_monsters
+print(get_all_monsters)
