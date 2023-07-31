@@ -12,15 +12,15 @@ class MonsterBase(abc.ABC):
         :simple_mode: Whether to use the simple or complex stats of this monster
         :level: The starting level of this monster. Defaults to 1.
         """
-        raise NotImplementedError
+        self.level = 1 
 
     def get_level(self):
         """The current level of this monster instance"""
-        raise NotImplementedError
+        return self.level
 
     def level_up(self):
         """Increase the level of this monster instance by 1"""
-        raise NotImplementedError
+        self.level += 1
 
     def get_hp(self):
         """Get the current HP of this monster instance"""
