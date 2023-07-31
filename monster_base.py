@@ -12,60 +12,115 @@ class MonsterBase(abc.ABC):
         :simple_mode: Whether to use the simple or complex stats of this monster
         :level: The starting level of this monster. Defaults to 1.
         """
-        raise NotImplementedError
+        self.simple_mode = simple_mode
+        self.level = level
+        self.stats = self.get_simple_stats() if simple_mode else self.get_complex_stats()
+        self.hp = self.get_max_hp() #Base Hp == max hp, can be adjusted by set_hp
+        
 
+    def __str__(self):
+        """Return a string representation of the Monster instance."""
+        return f"LV.{self.level} {self.get_name()}, {self.hp}/{self.get_max_hp()} HP"
+        
     def get_level(self):
         """The current level of this monster instance"""
-        raise NotImplementedError
+        return self.level
 
     def level_up(self):
         """Increase the level of this monster instance by 1"""
-        raise NotImplementedError
+        self.level += 1
 
     def get_hp(self):
         """Get the current HP of this monster instance"""
-        raise NotImplementedError
+        return self.hp
 
     def set_hp(self, val):
         """Set the current HP of this monster instance"""
-        raise NotImplementedError
+        self.hp = val #if val changes, self.hp changes
 
     def get_attack(self):
         """Get the attack of this monster instance"""
-        raise NotImplementedError
+        return self.stats.get_attack()
 
     def get_defense(self):
         """Get the defense of this monster instance"""
-        raise NotImplementedError
+        return self.stats.get_defense()
 
     def get_speed(self):
         """Get the speed of this monster instance"""
-        raise NotImplementedError
+        return self.stats.get_speed()
 
     def get_max_hp(self):
         """Get the maximum HP of this monster instance"""
-        raise NotImplementedError
+        return self.stats.get_max_hp()
 
     def alive(self) -> bool:
         """Whether the current monster instance is alive (HP > 0 )"""
-        raise NotImplementedError
+        return self.hp > 0
+    
+    def attack(self, other: MonsterBase): #NOTE: other is the enemy (other has similar structures)
+        """Check if your Pokeman is still alive""" #BASE
+        if not self.alive(): #your Pokeman is ded
+            raise ValueError("Stop, Stop! Your monster is already fainted")
+        if not other.alive(): #Don't attack ded Monster pls :( 
+            raise ValueError("Stop, Stop! The opponent is already fainted")
+        
+        """Compare speed"""
+        self_speed = self.stats.get_speed()
+        other_speed = other.stats.get_speed()
+        #Self attack first
+        if self_speed > other_speed:
+            self.attack_single(other)
+            if other.alive():
+                other.attack_single(self)
 
-    def attack(self, other: MonsterBase):
+        #Self attack second
+        elif self_speed < other_speed:
+            other.attack_single(self)
+            if self.alive():
+                self.attack_single(other)
+        
+        #Same speed (ignoring whether the attack they are receiving would kill them.)
+        else:
+            self.attack_single(other)
+            other.attack_single(self)
+            
+    def attack_single (self, other: MonsterBase):
         """Attack another monster instance"""
         # Step 1: Compute attack stat vs. defense stat
+        attack_stat = self.stats.get_attack()
+        defense_stat = other.stats.get_defense()
+        damage = 0
+
+        if defense_stat < attack_stat / 2:
+            damage = attack_stat - defense_stat
+        elif defense_stat < attack_stat:
+            damage = attack_stat * 5/8 - defense_stat / 4
+        else:
+            damage = attack_stat / 4
+        
         # Step 2: Apply type effectiveness
+        #If type effectiveness applicable?
+        #TODO
+        effective_damage = damage * 2
+
         # Step 3: Ceil to int
+        effective_damage = int(effective_damage + 1)  # Round up to the nearest (larger?) integer
+
         # Step 4: Lose HP
-        raise NotImplementedError
+        other.set_hp(max(0, other.get_hp() - effective_damage))  # Ensure HP doesn't go below 0
+
+        if self.alive() and not other.alive(): #level up
+            self.level_up()
 
     def ready_to_evolve(self) -> bool:
         """Whether this monster is ready to evolve. See assignment spec for specific logic."""
-        raise NotImplementedError
+        
 
     def evolve(self) -> MonsterBase:
         """Evolve this monster instance by returning a new instance of a monster class."""
         raise NotImplementedError
-
+    
     ### NOTE
     # Below is provided by the factory - classmethods
     # You do not need to implement them
