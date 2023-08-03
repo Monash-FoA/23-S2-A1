@@ -69,6 +69,6 @@ class TestMonsters(TestCase):
         self.assertEqual(t.get_hp(), 10)
         t.set_hp(8)
         t.level_up()
+        print(t.get_max_hp())
         self.assertEqual(t.get_max_hp(), 14)
         self.assertEqual(t.get_hp(), 12)
-

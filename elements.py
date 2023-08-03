@@ -75,7 +75,8 @@ class EffectivenessCalculator:
         Water is double effective to Fire, and half effective to Water and Grass [2, 0.5, 0.5]
         Grass is half effective to Fire and Grass, and double effective to Water [0.5, 2, 0.5]
         """
-        raise NotImplementedError
+        self.element_names = element_names
+        self.effectiveness_values = effectiveness_values
 
     @classmethod
     def get_effectiveness(cls, type1: Element, type2: Element) -> float:
@@ -84,7 +85,9 @@ class EffectivenessCalculator:
 
         Example: EffectivenessCalculator.get_effectiveness(Element.FIRE, Element.WATER) == 0.5
         """
-        raise NotImplementedError
+
+        print(f"type 1 {type1.name} effectiveness {type1.value} against {type2.name} type 2 value {type2.value}")
+
 
     @classmethod
     def from_csv(cls, csv_file: str) -> EffectivenessCalculator:
@@ -110,4 +113,4 @@ EffectivenessCalculator.make_singleton()
 
 
 if __name__ == "__main__":
-    print(EffectivenessCalculator.get_effectiveness(Element.FIRE, Element.WATER))
+    print(EffectivenessCalculator.get_effectiveness(Element.STEEL, Element.WATER))

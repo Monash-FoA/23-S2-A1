@@ -112,3 +112,4 @@ if TYPE_CHECKING:
     Treetower = MonsterBase
     Venomcoil = MonsterBase
     Vineon = MonsterBase
+

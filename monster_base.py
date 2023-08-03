@@ -14,10 +14,10 @@ class MonsterBase(abc.ABC):
         """
         self.simple_mode = simple_mode
         self.level = level
+        self.level_evolve = level
         self.stats = self.get_simple_stats() if simple_mode else self.get_complex_stats()
         self.hp = self.get_max_hp() #Base Hp == max hp, can be adjusted by set_hp
         
-
     def __str__(self):
         """Return a string representation of the Monster instance."""
         return f"LV.{self.level} {self.get_name()}, {self.hp}/{self.get_max_hp()} HP"
@@ -28,7 +28,23 @@ class MonsterBase(abc.ABC):
 
     def level_up(self):
         """Increase the level of this monster instance by 1"""
+        original_max_hp = self.get_max_hp()         #Save the original HP
+        original_hp = self.hp
+
+        original_attack = self.get_attack()     #Place holder. Delete if DONT USE
+        original_defense = self.get_defense()   #Place holder. Delete if DONT USE
+        original_speed = self.get_speed()       #Place holder. Delete if DONT USE
+
+        self.level_evolve = self.level          #The level before lvling up
         self.level += 1
+        self.set_hp(self.get_max_hp() - (original_max_hp - original_hp))
+
+        #Ratio way
+        # ratio_max_hp = self.get_max_hp() / original_max_hp
+        # if self.get_max_hp() % original_max_hp:
+        #     self.set_hp(int((self.hp*ratio_max_hp)+1)) #ceil
+        # else:
+        #     self.set_hp(int(self.hp*ratio_max_hp))
 
     def get_hp(self):
         """Get the current HP of this monster instance"""
@@ -61,9 +77,9 @@ class MonsterBase(abc.ABC):
     def attack(self, other: MonsterBase): #NOTE: other is the enemy (other has similar structures)
         """Check if your Pokeman is still alive""" #BASE
         if not self.alive(): #your Pokeman is ded
-            raise ValueError("Stop, Stop! Your monster is already fainted")
+            raise ValueError("Stop, Stop! Your Monster is already fainted")
         if not other.alive(): #Don't attack ded Monster pls :( 
-            raise ValueError("Stop, Stop! The opponent is already fainted")
+            raise ValueError("Stop, Stop! The Opponent is already fainted")
         
         """Compare speed"""
         self_speed = self.stats.get_speed()
@@ -84,7 +100,7 @@ class MonsterBase(abc.ABC):
         else:
             self.attack_single(other)
             other.attack_single(self)
-            
+
     def attack_single (self, other: MonsterBase):
         """Attack another monster instance"""
         # Step 1: Compute attack stat vs. defense stat
@@ -108,19 +124,25 @@ class MonsterBase(abc.ABC):
         effective_damage = int(effective_damage + 1)  # Round up to the nearest (larger?) integer
 
         # Step 4: Lose HP
-        other.set_hp(max(0, other.get_hp() - effective_damage))  # Ensure HP doesn't go below 0
+        other.set_hp(other.get_hp() - effective_damage)  
 
         if self.alive() and not other.alive(): #level up
             self.level_up()
 
     def ready_to_evolve(self) -> bool:
         """Whether this monster is ready to evolve. See assignment spec for specific logic."""
-        
+        return self.level_evolve != self.level and self.get_evolution() is not None
 
     def evolve(self) -> MonsterBase:
         """Evolve this monster instance by returning a new instance of a monster class."""
-        raise NotImplementedError
-    
+        evolution_class = self.get_evolution()
+        if evolution_class is not None:
+            evolved_monster = evolution_class(simple_mode=self.simple_mode, level=self.level)
+            evolved_monster.set_hp(evolved_monster.get_max_hp() - (self.get_max_hp() - self.hp))
+            return evolved_monster
+        else:
+            raise ValueError("The Monster is not ready to evolve")
+
     ### NOTE
     # Below is provided by the factory - classmethods
     # You do not need to implement them
