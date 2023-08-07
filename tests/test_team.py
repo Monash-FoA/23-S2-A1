@@ -121,11 +121,20 @@ class TestTeam(TestCase):
     @visibility(visibility.VISIBILITY_SHOW)
     @timeout()
     def test_optimise_mode(self):
+        # my_monsters = ArrayR(4)
+        # my_monsters[0] = Flamikin   # 6 HP
+        # my_monsters[1] = Aquariuma  # 8 HP
+        # my_monsters[2] = Rockodile  # 9 HP
+        # my_monsters[3] = Thundrake  # 5 HP
+        class WeakThundrake(Thundrake):
+            def get_max_hp(self):
+                return 5
         my_monsters = ArrayR(4)
         my_monsters[0] = Flamikin   # 6 HP
         my_monsters[1] = Aquariuma  # 8 HP
         my_monsters[2] = Rockodile  # 9 HP
-        my_monsters[3] = Thundrake  # 5 HP
+        my_monsters[3] = WeakThundrake  # 5 HP
+
         team = MonsterTeam(
             team_mode=MonsterTeam.TeamMode.OPTIMISE,
             selection_mode=MonsterTeam.SelectionMode.PROVIDED,

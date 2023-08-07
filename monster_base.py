@@ -15,7 +15,11 @@ class MonsterBase(abc.ABC):
         self.simple_mode = simple_mode
         self.level = level
         self.level_evolve = level
-        self.stats = self.get_simple_stats() if simple_mode else self.get_complex_stats()
+        if simple_mode:
+            self.stats = self.get_simple_stats()
+        else:
+            self.stats = self.get_complex_stats()
+        #self.stats = self.get_simple_stats() if simple_mode else self.get_complex_stats()
         self.hp = self.get_max_hp() #Base Hp == max hp, can be adjusted by set_hp
         
     def __str__(self):
@@ -30,10 +34,6 @@ class MonsterBase(abc.ABC):
         """Increase the level of this monster instance by 1"""
         original_max_hp = self.get_max_hp()         #Save the original HP
         original_hp = self.hp
-
-        original_attack = self.get_attack()     #Place holder. Delete if DONT USE
-        original_defense = self.get_defense()   #Place holder. Delete if DONT USE
-        original_speed = self.get_speed()       #Place holder. Delete if DONT USE
 
         self.level_evolve = self.level          #The level before lvling up
         self.level += 1
@@ -136,12 +136,12 @@ class MonsterBase(abc.ABC):
     def evolve(self) -> MonsterBase:
         """Evolve this monster instance by returning a new instance of a monster class."""
         evolution_class = self.get_evolution()
-        if evolution_class is not None:
+        if self.ready_to_evolve():
             evolved_monster = evolution_class(simple_mode=self.simple_mode, level=self.level)
             evolved_monster.set_hp(evolved_monster.get_max_hp() - (self.get_max_hp() - self.hp))
             return evolved_monster
         else:
-            raise ValueError("The Monster is not ready to evolve")
+            raise ValueError("The Monster cannot evolve")
 
     ### NOTE
     # Below is provided by the factory - classmethods
