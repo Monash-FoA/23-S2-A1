@@ -104,6 +104,32 @@ class MonsterTeam:
            
             elif self.team_mode == self.TeamMode.BACK: #add to the back
             # Add the new monster to team_collection if there's room
+
+
+                
+                #WORKING DONT DELETE
+                # if self.pokeman_size != 0:
+                #     for i in range(self.pokeman_size, 0, -1):
+                #         self.team_collection[i] = self.team_collection[i - 1]
+                # self.team_collection[0] = monster
+
+                #TESTING
+                # if not self.index_stack.is_empty():
+                #     print("POPED")
+                #     self.team_collection[self.TEAM_LIMIT - len(self.index_stack)] = monster
+                #     self.index_stack.pop()
+                #     print(f"LEN STACK POP {len(self.index_stack)}")
+                #     print(f"COUNTER {self.counter}")
+                # else:
+                #     self.team_collection[self.pokeman_size] = monster
+                # print(self.team_collection)
+
+                #TEST
+                # self.team_collection[self.counter] = monster
+                # if self.counter == self.TEAM_LIMIT-1:
+                #     self.counter = 0 #End of the array, return to the first one, also retrieve monster from here
+                # else:
+                #     self.counter += 1
                 
                 #TEST
                 
