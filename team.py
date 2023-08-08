@@ -42,7 +42,8 @@ class MonsterTeam:
 
     def __init__(self, team_mode: TeamMode, selection_mode, **kwargs) -> None:
         self.team_mode = team_mode
-
+        self.selection_mode = selection_mode
+        
         """
         Declaration (Numbers, integer, etc.)
         """
@@ -67,7 +68,6 @@ class MonsterTeam:
                 self.monster_input_list = value
             if isinstance(value, MonsterTeam.SortMode):
                 self.sort_mode = value
-
         if selection_mode == self.SelectionMode.RANDOM:
             self.select_randomly()
         elif selection_mode == self.SelectionMode.MANUAL:
@@ -169,7 +169,6 @@ class MonsterTeam:
             if self.team_collection_stack.is_empty():
                 raise Exception("The team is empty. Cannot reverse Monster's position")
             else:
-                # print(self.team_collection_stack.pop())
                 num_monster_reverse = 3       #num_monster_reverse changable to make the function more dynamic
                 temp_stack = ArrayStack(self.pokeman_size)
                 if num_monster_reverse <= 0:
@@ -184,27 +183,20 @@ class MonsterTeam:
                         
                         self.team_collection_stack.push(temp_stack.array[n])
                         
-                    
-                
-                # if num_monster_reverse > self.pokeman_size:
-                #     for n in self.team_collection_stack.array:
-                #         temp_stack.push(n)
-                # else:
-                #     for n in range(num_monster_reverse):
-                #         index = len(self) - 1 - n
-                #         temp_stack.push(self.team_collection_stack.array[n])
-                # for m in temp_stack.array:
-                #     index = len(self) - 1
-                #     self.team_collection_stack.array[index] = temp_stack.pop()
-                #     index += 1
-                #Create a replica with 3 front element with push and pop to reverse it
         elif self.team_mode == self.TeamMode.BACK:
             pass
         else:
             pass
 
+
+        """
+        FIXXXXXXXXXXXXXXXXX"""
     def regenerate_team(self) -> None:
-        raise NotImplementedError
+        if self.selection_mode == self.SelectionMode.PROVIDED:
+            
+            self.__init__(team_mode=self.team_mode,selection_mode=self.selection_mode, provided_monster =self.monster_input_list)
+            
+            
 
     def select_randomly(self):
         team_size = RandomGen.randint(1, self.TEAM_LIMIT)
@@ -365,8 +357,8 @@ if __name__ == "__main__":
     my_monsters = ArrayR(4)
     my_monsters[0] = Flamikin
     my_monsters[1] = Aquariuma
-    # my_monsters[2] = Vineon
-    # my_monsters[3] = Thundrake
+    my_monsters[2] = Vineon
+    my_monsters[3] = Thundrake
 
 
     #monster_retrieved.value.__class__ Find the class
@@ -377,7 +369,10 @@ if __name__ == "__main__":
         selection_mode=MonsterTeam.SelectionMode.PROVIDED,
         bla = my_monsters
     )
+
     team.special()
+    print(team)
+    team.regenerate_team()
     print(team)
     # while len(team):
     #     print(team.retrieve_from_team())
