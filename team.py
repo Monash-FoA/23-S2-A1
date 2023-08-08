@@ -11,6 +11,7 @@ from data_structures.stack_adt import ArrayStack    #This one for Front
 from data_structures.array_sorted_list import ArraySortedList   #This one for optimize team_mode
 from data_structures.sorted_list_adt import ListItem
 from helpers import Flamikin, Aquariuma, Vineon, Normake, Thundrake, Rockodile, Mystifly, Strikeon, Faeboa, Soundcobra #for testing
+from unittest import TestCase, mock #for testing
 if TYPE_CHECKING:
     from battle import Battle
 
@@ -36,38 +37,43 @@ class MonsterTeam:
         SPEED = auto()
         LEVEL = auto()
 
-    TEAM_LIMIT = 6
-    counter = 0                                         #Track the monster index of add_to_team
-    retrieve_counter = 0                                #Track the monster index of retrieve_from_team
-    pokeman_size = 0                                    #Number of Monster currently in the team
-
-
-    team_collection = ArrayR(TEAM_LIMIT)                #Array for TEAMMODE Back
-    team_collection_sort = ArraySortedList(TEAM_LIMIT)  #Array for TEAMMODE Optimize
-    team_collection_stack = ArrayStack(TEAM_LIMIT)      #Array for TEAMMODE Front 
+    TEAM_LIMIT = 6 
     
 
     def __init__(self, team_mode: TeamMode, selection_mode, **kwargs) -> None:
         self.team_mode = team_mode
+
+        """
+        Declaration (Numbers, integer, etc.)
+        """
+        self.counter = 0            #Track the monster index of add_to_team (Work as rear)
+        self.retrieve_counter = 0   #Track the monster index of retrieve_from_team (Work as front)
+        self.pokeman_size = 0       #Number of Monster currently in the team (length)
+
+        """
+        Data structures
+        """
+        self.team_collection = ArrayR(self.TEAM_LIMIT)                #Array for TEAMMODE Back
+        self.team_collection_sort = ArraySortedList(self.TEAM_LIMIT)  #Array for TEAMMODE Optimize
+        self.team_collection_stack = ArrayStack(self.TEAM_LIMIT)      #Array for TEAMMODE Front
+
+        
         # Add any preinit logic here.
+        """
+        Get **kwargs's value(s)
+        """
         for value in kwargs.values():   #O(1)
-            if isinstance(value, ArrayR) or isinstance(value, ArraySortedList) or isinstance(value, ArrayStack):
-                if len(value) <= self.TEAM_LIMIT: 
-                    for monster in value:                    
-                        self.add_to_team(monster)
-                        # print(self.team_collection)
-                        
-                else:
-                    raise ValueError(f"The number of monsters in the team exceeds the allowed limit.\nThe current team limit is {self.TEAM_LIMIT}")
+            if isinstance(value, ArrayR):
+                self.monster_input_list = value
             if isinstance(value, MonsterTeam.SortMode):
                 self.sort_mode = value
 
         if selection_mode == self.SelectionMode.RANDOM:
             self.select_randomly()
         elif selection_mode == self.SelectionMode.MANUAL:
-            self.select_manually(**kwargs)
+            self.select_manually()
         elif selection_mode == self.SelectionMode.PROVIDED:
-            self.select_provided(**kwargs)
+            self.select_provided(self.monster_input_list)
         else:
             raise ValueError(f"selection_mode {selection_mode} not supported.")
         
@@ -97,52 +103,29 @@ class MonsterTeam:
     
     def add_to_team(self, monster: MonsterBase):
 
-
-        if self.pokeman_size < self.TEAM_LIMIT:
-            if self.team_mode == self.TeamMode.FRONT:
-                self.team_collection_stack.push(monster)
+        """Base check. Only add monster when len(self) < TEAM_LIMIT
+        Because means when len(self) == TEAM_LIMIT -1, we've reached the final index of the array
+        """
+        if self.pokeman_size < self.TEAM_LIMIT:             #O(1) 
+            if self.team_mode == self.TeamMode.FRONT:       #O(1) Stack push():
+                self.team_collection_stack.push(monster)    #self.array[len(self)] = item: Constant time, self.length += 1: Integer addition, constant
            
-            elif self.team_mode == self.TeamMode.BACK: #add to the back
-            # Add the new monster to team_collection if there's room
-
-
-                
-                #WORKING DONT DELETE
-                # if self.pokeman_size != 0:
-                #     for i in range(self.pokeman_size, 0, -1):
-                #         self.team_collection[i] = self.team_collection[i - 1]
-                # self.team_collection[0] = monster
-
-                #TESTING
-                # if not self.index_stack.is_empty():
-                #     print("POPED")
-                #     self.team_collection[self.TEAM_LIMIT - len(self.index_stack)] = monster
-                #     self.index_stack.pop()
-                #     print(f"LEN STACK POP {len(self.index_stack)}")
-                #     print(f"COUNTER {self.counter}")
-                # else:
-                #     self.team_collection[self.pokeman_size] = monster
-                # print(self.team_collection)
-
-                #TEST
-                # self.team_collection[self.counter] = monster
-                # if self.counter == self.TEAM_LIMIT-1:
-                #     self.counter = 0 #End of the array, return to the first one, also retrieve monster from here
-                # else:
-                #     self.counter += 1
-                
-                #TEST
-                
+            elif self.team_mode == self.TeamMode.BACK:      #O(1)
+                                                            
+                """Mark the index we can input Monster in the array
+                When the index == len(self) -1, we wrap around and 
+                start to input over again (from the beginning of the array)
+                **I didn't know there's a Queue class for this**
+                """
+                #(0 + 1) % 6 = 0, (1 + 1) % 6 = 1, ... (5 + 1) % 6 = 0, (6 + 1) % 6 = 1
                 self.team_collection[self.counter] = monster
-                self.counter = (self.counter + 1) % self.TEAM_LIMIT #(0 + 1) % 6 = 0, (1 + 1) % 6 = 1, ... (5 + 1) % 6 = 0, (6 + 1) % 6 = 1
+                self.counter = (self.counter + 1) % self.TEAM_LIMIT 
                 
             elif self.team_mode == self.TeamMode.OPTIMISE:
 
                  #Create monster's instance to access data
-                #REAL
                 
-
-                sort_key = monster().get_attack()
+                sort_key = monster.get_attack()
                 monster = ListItem(monster,sort_key)
                 self.team_collection_sort.add(monster)
                 
@@ -158,49 +141,21 @@ class MonsterTeam:
     def retrieve_from_team(self) -> MonsterBase:
 
         if self.pokeman_size == 0:
-            raise ValueError("The team is empty")
+            raise ValueError("The team is empty!\nCannot retrieve Monster")
         else:
-            if self.team_mode == self.TeamMode.FRONT:
-                return self.team_collection_stack.pop()
-            elif self.team_mode == self.TeamMode.BACK:
-                #WORKING DO NOT DELETE
-                # monster_retrieved = self.team_collection[self.pokeman_size-1]
-                # self.pokeman_size -= 1
-                # return monster_retrieved
-                
-                #FINAL
-                # self.index_stack.push(self.counter)
-                # print(f"BEFORE COUNTER {self.counter}")
-                # if self.counter >= self.TEAM_LIMIT - 1:
-                #     self.counter = 0
-                # else:
-                #     self.counter += 1
-                
-                # print(f"AFTER COUNTER {self.counter}")
-                # monster_retrieve = self.team_collection[self.index_stack.peek()]
-                # print(f"len stack {len(self.index_stack)}")
-                # print(self.team_collection)
-                # self.pokeman_size -= 1
-                
-                
-                # if self.counter == self.TEAM_LIMIT-1:
-                #     self.counter = 0 #End of the array, return to the first one, also retrieve monster from here
-                # else:
-                #     self.counter += 1
-                # self.pokeman_size -= 1
-                # monster_retrieve = self.team_collection[self.counter]
-                # print(f'counter {self.counter}')
-                # print(self.team_collection)
+            if self.team_mode == self.TeamMode.FRONT:     #O(1) Only constant numbers
+                monster_retrieve = self.team_collection_stack.pop()
+                return monster_retrieve                      
+            elif self.team_mode == self.TeamMode.BACK:    #O(1) Only constant numbers
 
-                #FINAL FINAL BOI
-
-                
+                """Mark the index we can retrieve Monster in the array
+                When the index == len(self) -1, we wrap around and 
+                start to retrieve over again (from the beginning of the array)
+                I didn't know there's a Queue class for this
+                """
                 monster_retrieve = self.team_collection[self.retrieve_counter]
-
                 self.team_collection[self.retrieve_counter] = None
                 self.retrieve_counter = (self.retrieve_counter + 1) % self.TEAM_LIMIT
-
-                
                 self.pokeman_size -= 1
                 return monster_retrieve
                 
@@ -209,10 +164,44 @@ class MonsterTeam:
                 retrieve_from = self.team_collection_sort
         
         
-
-
     def special(self) -> None:
-        raise NotImplementedError
+        if self.team_mode == self.TeamMode.FRONT:
+            if self.team_collection_stack.is_empty():
+                raise Exception("The team is empty. Cannot reverse Monster's position")
+            else:
+                # print(self.team_collection_stack.pop())
+                num_monster_reverse = 3       #num_monster_reverse changable to make the function more dynamic
+                temp_stack = ArrayStack(self.pokeman_size)
+                if num_monster_reverse <= 0:
+                    raise Exception("Number of Monsters to be reversed cannot be less than or equal Zero")
+                else:
+
+                    for _ in range(num_monster_reverse):
+                        if not self.team_collection_stack.is_empty():
+                            temp_stack.push(self.team_collection_stack.pop())   #CAREFUL THIS, IF WRONG, REMOVE () FROM POP
+                            
+                    for n in range(len(temp_stack)):
+                        
+                        self.team_collection_stack.push(temp_stack.array[n])
+                        
+                    
+                
+                # if num_monster_reverse > self.pokeman_size:
+                #     for n in self.team_collection_stack.array:
+                #         temp_stack.push(n)
+                # else:
+                #     for n in range(num_monster_reverse):
+                #         index = len(self) - 1 - n
+                #         temp_stack.push(self.team_collection_stack.array[n])
+                # for m in temp_stack.array:
+                #     index = len(self) - 1
+                #     self.team_collection_stack.array[index] = temp_stack.pop()
+                #     index += 1
+                #Create a replica with 3 front element with push and pop to reverse it
+        elif self.team_mode == self.TeamMode.BACK:
+            pass
+        else:
+            pass
 
     def regenerate_team(self) -> None:
         raise NotImplementedError
@@ -358,7 +347,12 @@ class MonsterTeam:
         Example team if in TeamMode.FRONT:
         [Gustwing Instance, Aquariuma Instance, Flamikin Instance]
         """
-        raise NotImplementedError
+        if len(provided_monsters) <= self.TEAM_LIMIT: 
+            for monster in provided_monsters:
+                if monster is not None:                 
+                    self.add_to_team(monster())
+        else:
+            raise ValueError(f"The number of monsters in the team exceeds the allowed limit.\nThe current team limit is {self.TEAM_LIMIT}")
 
     def choose_action(self, currently_out: MonsterBase, enemy: MonsterBase) -> Battle.Action:
         # This is just a placeholder function that doesn't matter much for testing.
@@ -368,58 +362,22 @@ class MonsterTeam:
         return Battle.Action.SWAP
 
 if __name__ == "__main__":
-    # my_monsters = ArrayR(4)
-    # my_monsters[0] = Flamikin
-    # my_monsters[1] = Aquariuma
+    my_monsters = ArrayR(4)
+    my_monsters[0] = Flamikin
+    my_monsters[1] = Aquariuma
     # my_monsters[2] = Vineon
     # my_monsters[3] = Thundrake
 
-    RandomGen.set_seed(123456789)
-    team = MonsterTeam(
-        team_mode=MonsterTeam.TeamMode.BACK,
-        selection_mode=MonsterTeam.SelectionMode.RANDOM
-    )
-
-    m1 = team.retrieve_from_team()
-    m2 = team.retrieve_from_team()
-    m3 = team.retrieve_from_team()
-    m4 = team.retrieve_from_team()
-    m5 = team.retrieve_from_team()
-    m6 = team.retrieve_from_team()
-    team.add_to_team(Flamikin)
-    team.add_to_team(Aquariuma)
-    team.add_to_team(Vineon)
-    team.add_to_team(Thundrake)
-    team.add_to_team(Aquariuma)
-    m7 = team. retrieve_from_team()
-    m7 = m7()
-    print("Add after this")
-    team.add_to_team(Thundrake)
-    m8 = team.retrieve_from_team()
-    m9 = team.retrieve_from_team()
-    
-    # print(f"M1: {type(m1)}")
-    # print(f"M2: {type(m2)}")
-    # print(f"M3: {type(m3)}")
-    print(f"M1: {m1}")
-    print(f"M2: {m2}")
-    print(f"M3: {m3}")
-    print(f"M4: {m4}")
-    print(f"M4: {m5}")
-    print(f"M4: {m6}")
-    print(f"M7 {m7}")
-    print(f"M8 {m8}")
-    print(f"M9 {m9}")
-    print(team)
 
     #monster_retrieved.value.__class__ Find the class
 
 
-    # team = MonsterTeam(
-    #     team_mode=MonsterTeam.TeamMode.OPTIMISE,
-    #     selection_mode=MonsterTeam.SelectionMode.RANDOM,
-    #     sort_key=MonsterTeam.SortMode.HP, bla = my_monsters
-    # )
-    # print(team.retrieve_from_team())
+    team = MonsterTeam(
+        team_mode=MonsterTeam.TeamMode.FRONT,
+        selection_mode=MonsterTeam.SelectionMode.PROVIDED,
+        bla = my_monsters
+    )
+    team.special()
+    print(team)
     # while len(team):
     #     print(team.retrieve_from_team())

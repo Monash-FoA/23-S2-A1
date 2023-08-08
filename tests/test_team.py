@@ -38,7 +38,6 @@ class TestTeam(TestCase):
         thundrake = team.retrieve_from_team()
         self.assertIsInstance(vineon, Vineon)
         self.assertIsInstance(thundrake, Thundrake)
-
         # Team is now [Aquariuma, Flamikin]
         team.special()
         # Team is now [Flamikin, Aquariuma]

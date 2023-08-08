@@ -85,19 +85,23 @@ class EffectivenessCalculator:
         
         Example: EffectivenessCalculator.get_effectiveness(Element.FIRE, Element.WATER) == 0.5
         """
-        if not isinstance(type1, Element) or not isinstance(type2, Element):    #WORST & BEST: O(1) Type checks, constant time operations, complexity is O(1) since they do not depend on the size of any data structure.
+        if not isinstance(type1, Element) and not isinstance(type2, Element):    #WORST & BEST: O(1) Type checks, constant time operations, complexity is O(1) since they do not depend on the size of any data structure.
             raise ValueError("Arguments must be valid Element Enum values.")
+        
         type1_index = None  #WORST & BEST: O(1) Assigning a value to a variable doesn't depend on the input size. Constant time operations
         type2_index = None  #WORST & BEST: O(1) Assigning a value to a variable doesn't depend on the input size. Constant time operations
         num_type = int(len(cls.instance.effectiveness_values)**0.5) #WORST & BEST: O(1) Calculating the length of a list and taking the square root are both constant time operations. Constant time complexity
+
         for index, name in enumerate(cls.instance.element_names):   #WORST: O(n) This loop iterates through the array, which contains n elements, where n is the number of elements in the array
             temp_name = Element.from_string(name)                   #BEST: O(1) If both elements are found at the beginning of the list
             if type1_index is None and temp_name == type1:  #Added None checking, if type1 or type2_index has a value, the code will skip checking temp_name == type1/2
                 type1_index = index
             if type2_index is None and temp_name == type2:
                 type2_index = index
+
         type_position = type1_index * num_type + type2_index    #WORST & BEST: O(1)
         type_value = cls.instance.effectiveness_values[type_position]   #WORST & BEST: O(1)
+        
         return type_value
     
         #get_effectiveness has the complexity of O(n)
