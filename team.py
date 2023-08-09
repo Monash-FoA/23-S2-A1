@@ -190,7 +190,7 @@ class MonsterTeam:
 
 
         """
-        FIXXXXXXXXXXXXXXXXX"""
+        FIXXXXXXXXXXXxxxxXXXXXX"""
     def regenerate_team(self) -> None:
         if self.selection_mode == self.SelectionMode.PROVIDED:
             
