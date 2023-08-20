@@ -12,43 +12,51 @@ class MonsterBase(abc.ABC):
         :simple_mode: Whether to use the simple or complex stats of this monster
         :level: The starting level of this monster. Defaults to 1.
         """
-        raise NotImplementedError
+        self.simple_mode = simple_mode
+        self.level = level #is this enough?
+        self.current_hp = self.get_max_hp()
+    
+    def str(self):
+        return f"LV.{self.level} {self.get_name()}, {self.get_hp()}/ppy{self.get_max_hp()} HP"
 
     def get_level(self):
         """The current level of this monster instance"""
-        raise NotImplementedError
+        return self.level
 
-    def level_up(self):
+    def level_up(self): #
         """Increase the level of this monster instance by 1"""
-        raise NotImplementedError
+        self.level += 1
 
     def get_hp(self):
         """Get the current HP of this monster instance"""
-        raise NotImplementedError
+        return self.current_hp
 
     def set_hp(self, val):
         """Set the current HP of this monster instance"""
-        raise NotImplementedError
+        self.current_hp = val
 
     def get_attack(self):
         """Get the attack of this monster instance"""
-        raise NotImplementedError
+        return self.get_simple_stats().get_attack()
 
     def get_defense(self):
         """Get the defense of this monster instance"""
-        raise NotImplementedError
+        return self.get_simple_stats().get_defense()
 
     def get_speed(self):
         """Get the speed of this monster instance"""
-        raise NotImplementedError
+        return self.get_simple_stats().get_speed()
 
     def get_max_hp(self):
         """Get the maximum HP of this monster instance"""
-        raise NotImplementedError
+        return self.get_simple_stats().get_max_hp()
 
     def alive(self) -> bool:
         """Whether the current monster instance is alive (HP > 0 )"""
-        raise NotImplementedError
+        if self.get_hp() > 0:
+            return True
+        else:
+            return False
 
     def attack(self, other: MonsterBase):
         """Attack another monster instance"""
@@ -56,15 +64,36 @@ class MonsterBase(abc.ABC):
         # Step 2: Apply type effectiveness
         # Step 3: Ceil to int
         # Step 4: Lose HP
+        
+        #if other.get_defense() < (self.get_attack/2)():
+            #damage = self.get_attack() - other.get_defense()
+        #elif other.defense() < self.get_attack:
+            #damage = (self.get_attack * 5/8) - (other.get_defense / 4)
+        #else:
+            #damage = self.get_attack / 4
+
+        #implement type effectiveness here
+
+        #damage = math.ceil(damage) can import maths?
+
+        
         raise NotImplementedError
 
     def ready_to_evolve(self) -> bool:
         """Whether this monster is ready to evolve. See assignment spec for specific logic."""
-        raise NotImplementedError
+
+        #if other.alive == False: #doesnt work, something like this?
+        
+        #if self.get_evolution is not None: #check if there is a possibly evolution, does it return
+        # none when it fails?
+
+        #according to docs, need to check if level has been increased?
+        
 
     def evolve(self) -> MonsterBase:
         """Evolve this monster instance by returning a new instance of a monster class."""
-        raise NotImplementedError
+        if self.ready_to_evolve():
+            return self.get_evolution
 
     ### NOTE
     # Below is provided by the factory - classmethods
