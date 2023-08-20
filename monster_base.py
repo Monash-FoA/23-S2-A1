@@ -23,7 +23,7 @@ class MonsterBase(abc.ABC):
         """The current level of this monster instance"""
         return self.level
 
-    def level_up(self): #
+    def level_up(self): ###
         """Increase the level of this monster instance by 1"""
         self.level += 1
 
